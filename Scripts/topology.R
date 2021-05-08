@@ -1,13 +1,22 @@
+setwd("../")
+
+.libPaths(c("Resources/Rlibs/R-4.0.3",.libPaths()))
+NET_FILE = "Data/Networks/Human/stabsel_network_Hs.rds" # including partial correlations
+PATH = "Human_Network/stabsel/"
+# NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs.rds" # excluding partial correlations
+# PATH = "Human_Network/stabsel_pcclasso/"
+
 DEFAULT_COLOR = "grey"
 HUB_COLOR = "darkviolet"
 BOTTLENECK_COLOR = "darkmagenta"
 TF_COLOR = "mediumvioletred"
 
-source("/cellnet/GeneCorrelation/Human_Network_characterization/functions.R")
+source("Scripts/functions.R")
 
 # network as a igraph object
 library(igraph)
-load("/data/public/adesous1/scDropImp/network/network.rds"); rm(O)
+network_matrix <- as.matrix(readRDS(NET_FILE))
+
 # make matrix square
 g <- union(colnames(network_matrix),rownames(network_matrix))
 adj_mat <- matrix(0, nrow = length(g), ncol = length(g), dimnames = list(g,g))
@@ -15,7 +24,7 @@ adj_mat[rownames(network_matrix),colnames(network_matrix)] <- network_matrix
 rm(network_matrix,g); gc()
 net_graph <- graph_from_adjacency_matrix(t(adj_mat), mode = "directed", weighted = T)
 # there are no isolated vertices
-saveRDS(net_graph, "objects/network_igraph.rds")
+saveRDS(net_graph, paste0("Outputs/",PATH,"network_igraph.rds"))
 
 features.data <- data.frame("Gene" = names(V(graph = net_graph)))
 # In-degree
@@ -24,7 +33,7 @@ features.data$InDegree <- degree(graph = net_graph, mode = "in")[features.data$G
 features.data$OutDegree <- degree(graph = net_graph, mode = "out")[features.data$Gene]
 
 # Betweeness (how much a given node acts as a bridge to others in the network, based on paths in the network)
-features.data$Betweenness <- centr_betw(graph = net_graph)$res[features.data$Gene]
+features.data$Betweenness <- centr_betw(graph = net_graph)$res
 
 # # Closeness (how connected a given node is to others in the network)
 # features.data$ClosenessAll <- centr_clo(graph = net_graph, mode = "all")$res[features.data$Gene]
@@ -40,8 +49,7 @@ bottlenecks <- features.data$Gene[head(order(features.data$Betweenness, decreasi
 features.data$IsBottleneck <- features.data$Gene %in% bottlenecks
 
 # TFs
-TFtable <- read.delim("/data/public/adesous1/scDropImp/networkinference/analyses/clustering_analyses_2/TFtable.txt")
-# downloaded from http://www.tfcheckpoint.org/index.php/browse
+TFtable <- read.delim("Resources/TFtable.txt")
 TFs <- as.character(TFtable$Gene_symbol)
 features.data$IsTF <- features.data$Gene %in% TFs
 
@@ -49,8 +57,8 @@ table(features.data$IsHub, features.data$IsTF)
 table(features.data$IsBottleneck, features.data$IsTF)
 table(features.data$IsHub, features.data$IsBottleneck)
 
-saveRDS(hubs, "objects/100_hubs.rds")
-saveRDS(bottlenecks, "objects/100_bottlenecks.rds")
+saveRDS(hubs, paste0("Outputs/",PATH,"Topology/100_hubs.rds"))
+saveRDS(bottlenecks, paste0("Outputs/",PATH,"/Topology/100_bottlenecks.rds"))
 
 library(ggplot2)
 library(ggpubr)
@@ -122,7 +130,8 @@ plot.list[[12]] <- ggplot(subset(features.data, IsTF)) +
   theme_classic() + theme(text = element_text(size = 20),
     axis.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank())
 
-pdf("plots/centrality_all_hubs_bottlenecks_TFs.pdf", height = 10, width = 12)
+pdf(paste0("Plots/",PATH,"Topology/centrality_all_hubs_bottlenecks_TFs.pdf"),
+    height = 10, width = 12)
 ggarrange(plotlist = plot.list, align = "hv", ncol = 3, nrow = 4)
 dev.off()
 
@@ -130,13 +139,22 @@ dev.off()
 # GO enrichments in hubs and bottlenecks
 
 hubs_BP <- GetGOEnrich(hubs, names(V(net_graph)), "BP")
+hubs_MF <- GetGOEnrich(hubs, names(V(net_graph)), "MF")
 bottlenecks_BP <- GetGOEnrich(bottlenecks, names(V(net_graph)), "BP")
 bottlenecks_MF <- GetGOEnrich(bottlenecks, names(V(net_graph)), "MF")
+save(list = c("hubs_BP","hubs_MF","bottlenecks_BP","bottlenecks_MF"),
+     file = paste0("Outputs/",PATH,"Topology/GO_hubs_bottlenecks.RData"))
 
 go.list <- list()
-go.list[[1]] <- PlotGOEnrich(bottlenecks_BP, BOTTLENECK_COLOR, "GObp enriched in bottlenecks")
-go.list[[2]] <- PlotGOEnrich(bottlenecks_MF, BOTTLENECK_COLOR, "GOmf enriched in bottlenecks")
+go.list[[1]] <- PlotGOEnrich(hubs_BP, HUB_COLOR, "GObp enriched in bottlenecks")
+go.list[[2]] <- PlotGOEnrich(hubs_MF, HUB_COLOR, "GOmf enriched in bottlenecks")
+go.list[[3]] <- PlotGOEnrich(bottlenecks_BP, BOTTLENECK_COLOR, "GObp enriched in bottlenecks")
+go.list[[4]] <- PlotGOEnrich(bottlenecks_MF, BOTTLENECK_COLOR, "GOmf enriched in bottlenecks")
 
-pdf("plots/GObp_bottlenecks.pdf", width = 13)
-ggarrange(plotlist = go.list, ncol = 1, heights = c(5,2), align = "hv")
+pdf(paste0("Plots/",PATH,"Topology/GO_hubs.pdf"), width = 13, height = 8)
+ggarrange(plotlist = go.list[1:2], ncol = 1, heights = c(7,2.2), align = "hv")
+dev.off()
+
+pdf(paste0("Plots/",PATH,"Topology/GO_bottlenecks.pdf"), width = 13, height = 9)
+ggarrange(plotlist = go.list[3:4], ncol = 1, heights = c(2,1), align = "hv")
 dev.off()
