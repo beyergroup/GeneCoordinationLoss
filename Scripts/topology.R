@@ -146,8 +146,8 @@ save(list = c("hubs_BP","hubs_MF","bottlenecks_BP","bottlenecks_MF"),
      file = paste0("Outputs/",PATH,"Topology/GO_hubs_bottlenecks.RData"))
 
 go.list <- list()
-go.list[[1]] <- PlotGOEnrich(hubs_BP, HUB_COLOR, "GObp enriched in bottlenecks")
-go.list[[2]] <- PlotGOEnrich(hubs_MF, HUB_COLOR, "GOmf enriched in bottlenecks")
+go.list[[1]] <- PlotGOEnrich(hubs_BP, HUB_COLOR, "GObp enriched in hubs")
+go.list[[2]] <- PlotGOEnrich(hubs_MF, HUB_COLOR, "GOmf enriched in hubs")
 go.list[[3]] <- PlotGOEnrich(bottlenecks_BP, BOTTLENECK_COLOR, "GObp enriched in bottlenecks")
 go.list[[4]] <- PlotGOEnrich(bottlenecks_MF, BOTTLENECK_COLOR, "GOmf enriched in bottlenecks")
 
