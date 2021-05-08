@@ -1,10 +1,10 @@
 setwd("../")
 
 .libPaths(c("Resources/Rlibs/R-4.0.3",.libPaths()))
-NET_FILE = "Data/Networks/Human/stabsel_network_Hs.rds" # including partial correlations
-PATH = "Human_Network/stabsel/"
-# NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs.rds" # excluding partial correlations
-# PATH = "Human_Network/stabsel_pcclasso/"
+# NET_FILE = "Data/Networks/Human/stabsel_network_Hs.rds" # including partial correlations
+# PATH = "Human_Network/stabsel/"
+NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs.rds" # excluding partial correlations
+PATH = "Human_Network/stabsel_pcclasso/"
 
 DEFAULT_COLOR = "grey"
 HUB_COLOR = "darkviolet"
@@ -28,12 +28,12 @@ saveRDS(net_graph, paste0("Outputs/",PATH,"network_igraph.rds"))
 
 features.data <- data.frame("Gene" = names(V(graph = net_graph)))
 # In-degree
-features.data$InDegree <- degree(graph = net_graph, mode = "in")[features.data$Gene]
+features.data$InDegree <- igraph::degree(graph = net_graph, mode = "in")[features.data$Gene]
 # Out-degree
-features.data$OutDegree <- degree(graph = net_graph, mode = "out")[features.data$Gene]
+features.data$OutDegree <- igraph::degree(graph = net_graph, mode = "out")[features.data$Gene]
 
 # Betweeness (how much a given node acts as a bridge to others in the network, based on paths in the network)
-features.data$Betweenness <- centr_betw(graph = net_graph)$res
+features.data$Betweenness <- igraph::centr_betw(graph = net_graph)$res
 
 # # Closeness (how connected a given node is to others in the network)
 # features.data$ClosenessAll <- centr_clo(graph = net_graph, mode = "all")$res[features.data$Gene]
@@ -151,10 +151,24 @@ go.list[[2]] <- PlotGOEnrich(hubs_MF, HUB_COLOR, "GOmf enriched in hubs")
 go.list[[3]] <- PlotGOEnrich(bottlenecks_BP, BOTTLENECK_COLOR, "GObp enriched in bottlenecks")
 go.list[[4]] <- PlotGOEnrich(bottlenecks_MF, BOTTLENECK_COLOR, "GOmf enriched in bottlenecks")
 
-pdf(paste0("Plots/",PATH,"Topology/GO_hubs.pdf"), width = 13, height = 8)
-ggarrange(plotlist = go.list[1:2], ncol = 1, heights = c(7,2.2), align = "hv")
-dev.off()
-
-pdf(paste0("Plots/",PATH,"Topology/GO_bottlenecks.pdf"), width = 13, height = 9)
-ggarrange(plotlist = go.list[3:4], ncol = 1, heights = c(2,1), align = "hv")
-dev.off()
+if(grepl("pcclasso",PATH)){
+  
+  pdf(paste0("Plots/",PATH,"Topology/GO_hubs.pdf"), width = 13, height = 12)
+  ggarrange(plotlist = go.list[1:2], ncol = 1, heights = c(5,1), align = "hv")
+  dev.off()
+  
+  pdf(paste0("Plots/",PATH,"Topology/GO_bottlenecks.pdf"), width = 13, height = 7)
+  ggarrange(plotlist = go.list[3:4], ncol = 1, heights = c(2.5,1), align = "hv")
+  dev.off()
+  
+} else{
+  
+  pdf(paste0("Plots/",PATH,"Topology/GO_hubs.pdf"), width = 13, height = 8)
+  ggarrange(plotlist = go.list[1:2], ncol = 1, heights = c(7,2.2), align = "hv")
+  dev.off()
+  
+  pdf(paste0("Plots/",PATH,"Topology/GO_bottlenecks.pdf"), width = 13, height = 9)
+  ggarrange(plotlist = go.list[3:4], ncol = 1, heights = c(2,1), align = "hv")
+  dev.off()
+  
+}
