@@ -1,13 +1,17 @@
 # Module identification
 
-source("/cellnet/GeneCorrelation/Human_Network_characterization/functions.R")
-.libPaths(c("/data/public/adesous1/GeneCorrelation/Resources/Rlibs/R-4.0.3/",.libPaths()))
+setwd("../")
+
+.libPaths(c("Resources/Rlibs/R-4.0.3",.libPaths()))
+# PATH = "Human_Network/stabsel/"
+PATH = "Human_Network/stabsel_pcclasso/"
+
 library(igraph)
 library(topGO)
 
-setwd("../")
+source("Scripts/functions.R")
 
-net_graph <- readRDS("Outputs/Human_Network/network_igraph.rds")
+net_graph <- readRDS(paste0("Outputs/",PATH,"network_igraph.rds"))
 # remove directionality to find communities
 net_graph_undirected <- as.undirected(net_graph, mode = "collapse", edge.attr.comb = "mean")
 
@@ -16,7 +20,7 @@ modules_absweights <- cluster_louvain(graph = net_graph_undirected, weights = ab
 modules_noweights <- cluster_louvain(graph = net_graph_undirected, weights = NA)
 # modules_betwenness_absweights <- cluster_edge_betweenness(net_graph_undirected, weights = abs_weights)
 
-png("Plots/Human_Network/Topology/community_sizes_louvain_abs.png", height = 300)
+png(paste0("Plots/",PATH,"Topology/community_sizes_louvain_abs.png"), height = 300)
 barplot(sort(sizes(modules_absweights), decreasing = T), names.arg = 1:length(sizes(modules_absweights)),
         main = "Size of communities found with cluster_louvain, |weights|")
 dev.off()
@@ -24,7 +28,7 @@ barplot(sort(sizes(modules_noweights), decreasing = T), names.arg = 1:length(siz
         main = "Size of communities found with cluster_louvain, unweighted")
 
 membership_absweights <- membership(modules_absweights)
-saveRDS(membership_absweights, "Outputs/Human_Network/Topology/community_membership_louvain_abs.rds")
+saveRDS(membership_absweights, paste0("Outputs/",PATH,"community_membership_louvain_abs.rds"))
 
 # remove small communities (< 3 members)
 communities <- names(sort(sizes(modules_absweights), decreasing = T))
@@ -37,9 +41,9 @@ for(c in communities){
   GObp.list[[c]] <- GetGOEnrich(g, names(V(net_graph_undirected)), "BP", enrich_cutoff = 1, algorithm = "weight")
   GOmf.list[[c]] <- GetGOEnrich(g, names(V(net_graph_undirected)), "MF", enrich_cutoff = 1, algorithm = "weight")
 }
-save(list = c("GObp.list","GOmf.list"), file = "Outputs/Human_Network/Topology/GO_allcommunities_weight.RData")
+save(list = c("GObp.list","GOmf.list"), file = paste0("Outputs/",PATH,"Topology/GO_allcommunities_weight.RData"))
 
-pdf("Plots/Human_Network/Topology/GO_top10communities.pdf")
+pdf(paste0("Plots/",PATH,"Topology/GO_top10communities.pdf"))
 for(i in seq_along(GObp.list)[1:10]){
   # print(PlotGOEnrich(GObp.list[[i]], col = "black", title = paste("Module",names(GObp.list)[i])))
   # print(PlotGOEnrich(GOmf.list[[i]], col = "black", title = paste("Module",names(GOmf.list)[i])))
