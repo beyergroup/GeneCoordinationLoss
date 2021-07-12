@@ -53,7 +53,7 @@ PredictionCor <- function(pred_file, real, add.intercept = F, add.centers = T){
   
 }
 
-cor <- sapply(files[-2], PredictionCor, real = GTEx_real, add.intercept = F, simplify = T)
+cor <- sapply(files[c(1,4)], PredictionCor, real = GTEx_real, add.intercept = F, simplify = T)
 rownames(cor) <- sapply(rownames(cor), function(x) paste(head(strsplit(x, "\\.")[[1]],-1), collapse = "."))
 saveRDS(cor, "cor_nointercept_whole.rds")
 
@@ -97,18 +97,24 @@ saveRDS(cor_expressed, "cor_nointercept_whole_expressed.rds")
 plot.data <- melt(cor_expressed)
 plot.data$Var2 <- factor(as.character(plot.data$Var2), levels = c("100","20","Original"))
 
-pdf("netshuffling_GTExwhole_nointercept_expressed.pdf", width = 8, height = 5)
-ggplot() + 
+# pdf("netshuffling_GTExwhole_nointercept_expressed.pdf", width = 8, height = 5)
+pdf("Plots/Human_Network/stabsel/Predictability/netshuffling_GTExwhole_nointercept_expressed_adjusted.pdf", width = 6, height = 4)
+ggplot() +
   geom_density(data = subset(plot.data, Var2 == "100"),
                aes(x = value, color = Var2, fill = Var2)) +
-  geom_density(data = subset(plot.data, Var2 != "100"),
+  # geom_density(data = subset(plot.data, Var2 != "100"),
+  geom_density(data = subset(plot.data, Var2 == "Original"),
                aes(x = value, color = Var2, fill = Var2), size = 3, alpha = 0.7) +
   geom_vline(xintercept = 0, linetype = "dashed", color = "lightgrey") +
   xlab("Correlation coefficient") +
-  scale_color_manual(values = c("Original" = "#1f73e0", "20" = "#ADD7F6", "100" = "darkgrey"),
-                     labels = c("Original" = "Network", "20" = "20% randomized network", "100" = "100% randomized network")) +
-  scale_fill_manual(values = c("Original" = "#1f73e0", "20" = "#ADD7F6", "100" = "darkgrey"),
-                    labels = c("Original" = "Network", "20" = "20% randomized network", "100" = "100% randomized network")) +
+  # scale_color_manual(values = c("Original" = "#1f73e0", "20" = "#ADD7F6", "100" = "darkgrey"),
+  #                    labels = c("Original" = "Network", "20" = "20% randomized network", "100" = "100% randomized network")) +
+  # scale_fill_manual(values = c("Original" = "#1f73e0", "20" = "#ADD7F6", "100" = "darkgrey"),
+  #                   labels = c("Original" = "Network", "20" = "20% randomized network", "100" = "100% randomized network")) +
+  scale_color_manual(values = c("Original" = "#1f73e0", "100" = "darkgrey"),
+                     labels = c("Original" = "True relationships", "100" = "Randomized relationships")) +
+  scale_fill_manual(values = c("Original" = "#1f73e0", "100" = "darkgrey"),
+                    labels = c("Original" = "True relationships", "100" = "Randomized relationships")) +
   xlim(c(-1,1)) +
   guides(color = guide_legend(nrow = 1, byrow = TRUE)) +
   theme_classic() + theme(text = element_text(size = 20),

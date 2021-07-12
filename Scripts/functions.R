@@ -68,3 +68,23 @@ NetVis <- function(net, genes = NULL, col){
   
   return()
 }
+
+
+# Predict expression in data given network
+PredictNet <- function(net, centered_data, maxiter){
+  
+  # restrict to network targets and predictors
+  targets <- intersect(rownames(centered_data),rownames(net))
+  predictors <- intersect(rownames(centered_data),colnames(net))
+  net <- net[targets, predictors]
+  
+  # multiply by network coefficients
+  prediction <- centered_data
+  for(i in 1:maxiter){
+    message("Iteration ",i)
+    prediction[targets,] <- net[targets,predictors] %*% prediction[predictors,]
+    i <- i+1
+  }
+  
+  return(prediction[targets,])
+}
