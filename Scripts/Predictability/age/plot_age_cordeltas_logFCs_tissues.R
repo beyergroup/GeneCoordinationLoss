@@ -8,15 +8,25 @@ library(ggpubr, lib.loc = "Resources/Rlibs/R-4.0.3/")
 net = "stabsel"
 # net = "stabsel_pcclasso_filter01"
 
-predictability_files <- list.files("Outputs/Human_Network/stabsel/Predictability/AgeTissue",
+exclude_poorly_predicted = T
+
+
+predictability_files <- list.files(paste0("Outputs/Human_Network/",net,"/Predictability/AgeTissue"),
   pattern = "_sampled_ageDP.rds", full.names = T)
 expression_files <- list.files("Outputs/GTEx/AgeDE",
   pattern = "_ageDE.rds", full.names = T)
+
+if(exclude_poorly_predicted){
+  poorly_predicted <- readRDS(paste0("Outputs/Human_Network/",net,
+                                     "/Predictability/Tissue/poorly_predicted_crosstissue.rds"))
+}
 
 tissues <- unique(sapply(predictability_files, function(x)
   strsplit(tail(strsplit(x,"/")[[1]],1),"_")[[1]][1]))
 
 plots <- list()
+densities <- list()
+
 for(tissue in tissues){
   
   ageDE <- readRDS(expression_files[grepl(tissue,expression_files,fixed =T)])
@@ -36,6 +46,9 @@ for(tissue in tissues){
   ageDP <- limma::topTable(fit = ageDP, coef = "AgeGroupOld", number = nrow(ageDP))
   
   common <- intersect(rownames(ageDP),rownames(ageDE))
+  if(exclude_poorly_predicted){
+    common <- common[!(common %in% poorly_predicted)]
+  }
   
   plot.data <- data.frame("DE_LFC" = ageDE[common,"logFC"], "DE_pval" = ageDE[common,"adj.P.Val"],
                           "DP_LFC" = ageDP[common,"logFC"], "DP_pval" = ageDP[common,"adj.P.Val"])
@@ -54,9 +67,39 @@ for(tissue in tissues){
     guides(alpha = F, color = F) + theme_classic() +
     ggtitle(gsub("(","\n(",tissue,fixed=T)) + 
     theme(text = element_text(size = 20), title = element_text(size = 18))
+  
+  densities[[tissue]] <- ggplot(plot.data) +
+    geom_density(aes(x = DP_LFC), size = .5, fill = "grey") +
+    geom_vline(xintercept = 0) +
+    xlim(c(-max(abs(plot.data$DP_LFC)),max(abs(plot.data$DP_LFC)))) +
+    xlab("Deviation fold change") +
+    guides(alpha = F, color = F) + theme_classic() +
+    ggtitle(gsub("(","\n(",tissue,fixed=T)) + 
+    theme(text = element_text(size = 20), title = element_text(size = 18))
 }
 
-pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age_DE.pdf"),
-  height = 10, width = 16)
-ggarrange(plotlist = plots)
-dev.off()
+if(exclude_poorly_predicted){
+  
+  pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age_DE_nopoorlypred.pdf"),
+      height = 10, width = 16)
+  ggarrange(plotlist = plots)
+  dev.off()
+  
+  pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age_nopoorlypred.pdf"),
+      height = 8, width = 16)
+  ggarrange(plotlist = densities)
+  dev.off()
+  
+} else{
+  
+  pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age_DE.pdf"),
+    height = 10, width = 16)
+  ggarrange(plotlist = plots)
+  dev.off()
+  
+  pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age.pdf"),
+      height = 8, width = 16)
+  ggarrange(plotlist = densities)
+  dev.off()
+}
+

@@ -4,6 +4,8 @@
 # type = "tissue"
 type = "agetissue"
 
+exclude_poorly_predicted = T
+
 setwd("../")
 
 
@@ -34,6 +36,12 @@ for(net in c("stabsel","stabsel_pcclasso_filter01")){
   }
 }
 
+if(exclude_poorly_predicted){
+  poorly_predicted <- readRDS("Outputs/Human_Network/stabsel/Predictability/Tissue/poorly_predicted_crosstissue.rds")
+  for(i in 1:length(correlations)){
+    correlations[[i]] <- lapply(correlations[[i]], function(x) x[!(names(x) %in% poorly_predicted)])
+  }
+}
 
 library(reshape2, lib.loc = "Resources/Rlibs/R-4.0.3/")
 library(ggplot2, lib.loc = "Resources/Rlibs/R-4.0.3/")
@@ -42,7 +50,7 @@ library(ggpubr, lib.loc = "Resources/Rlibs/R-4.0.3/")
 # Plot
 
 plot.data <- melt(correlations)
-if(type = "agetissue"){
+if(type == "agetissue"){
   plot.data$Tissue <- sapply(plot.data$L2, function(x) strsplit(x, "_")[[1]][1])
   plot.data$Tissue <- sapply(plot.data$Tissue, function(x) gsub("(","\n(",x, fixed = T))
   plot.data$Age <- sapply(plot.data$L2, function(x) strsplit(x, "_")[[1]][2])
@@ -66,9 +74,12 @@ if(type == "age"){
         legend.position = "bottom", legend.title = element_blank(),
         axis.title.y = element_blank(), title = element_text(size = 18))
   }
-  
-  pdf("Plots/Human_Network/Comparisons/predictability_GTEx_subsets_age.pdf")
-  ggarrange(plotlist = plots, align = "hv", nrow = 2, common.legend = T, legend = "bottom")
+  if(exclude_poorly_predicted){
+    pdf("Plots/Human_Network/Comparisons/predictability_GTEx_subsets_age_nopoorlypred.pdf")
+  } else{
+    pdf("Plots/Human_Network/Comparisons/predictability_GTEx_subsets_age.pdf")
+  }
+  print(ggarrange(plotlist = plots, align = "hv", nrow = 2, common.legend = T, legend = "bottom"))
   dev.off()
   
 } else if(type == "tissue"){
@@ -83,9 +94,12 @@ if(type == "age"){
                               legend.position = "bottom", legend.title = element_blank(),
                               axis.title.y = element_blank(), title = element_text(size = 18))
   }
-  
-  pdf("Plots/Human_Network/Comparisons/predictability_GTEx_subsets.pdf", height = 9, width = 16)
-  ggarrange(plotlist = plots, align = "hv", common.legend = T, legend = "bottom")
+  if(exclude_poorly_predicted){
+    pdf("Plots/Human_Network/Comparisons/predictability_GTEx_subsets_nopoorlypred.pdf", height = 9, width = 16)
+  } else{
+    pdf("Plots/Human_Network/Comparisons/predictability_GTEx_subsets.pdf", height = 9, width = 16)
+  }
+  print(ggarrange(plotlist = plots, align = "hv", common.legend = T, legend = "bottom"))
   dev.off()
   
 } else{
@@ -104,14 +118,26 @@ if(type == "age"){
           axis.title.y = element_blank(), title = element_text(size = 18))
     }
   }
+  if(exclude_poorly_predicted){
+    pdf("Plots/Human_Network/stabsel/Predictability/predictability_GTEx_subsets_tissue_age_nopoorlypred.pdf",
+        height = 9, width = 16)
+    print(ggarrange(plotlist = plots[[1]], align = "hv", common.legend = T, legend = "bottom"))
+    dev.off()
+    
+    pdf("Plots/Human_Network/stabsel_pcclasso_filter01/Predictability/predictability_GTEx_subsets_tissue_age_nopoorlypredicted.pdf",
+        height = 9, width = 16)
+    print(ggarrange(plotlist = plots[[2]], align = "hv", common.legend = T, legend = "bottom"))
+    dev.off()
+  } else{
+    pdf("Plots/Human_Network/stabsel/Predictability/predictability_GTEx_subsets_tissue_age.pdf",
+        height = 9, width = 16)
+    print(ggarrange(plotlist = plots[[1]], align = "hv", common.legend = T, legend = "bottom"))
+    dev.off()
+    
+    pdf("Plots/Human_Network/stabsel_pcclasso_filter01/Predictability/predictability_GTEx_subsets_tissue_age.pdf",
+        height = 9, width = 16)
+    print(ggarrange(plotlist = plots[[2]], align = "hv", common.legend = T, legend = "bottom"))
+    dev.off()
+  }
   
-  pdf("Plots/Human_Network/stabsel/Predictability/predictability_GTEx_subsets_tissue_age.pdf",
-    height = 9, width = 16)
-  ggarrange(plotlist = plots[[1]], align = "hv", common.legend = T, legend = "bottom")
-  dev.off()
-  
-  pdf("Plots/Human_Network/stabsel_pcclasso_filter01/Predictability/predictability_GTEx_subsets_tissue_age.pdf",
-    height = 9, width = 16)
-  ggarrange(plotlist = plots[[2]], align = "hv", common.legend = T, legend = "bottom")
-  dev.off()
 }
