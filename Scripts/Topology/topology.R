@@ -151,10 +151,12 @@ plot.list[[15]] <- ggplot(subset(features.data, IsPoorlyPredicted)) +
   theme_classic() + theme(text = element_text(size = 20),
     axis.text.y = element_blank(), axis.title.y = element_blank(), axis.ticks.y = element_blank())
 
-pdf(paste0("Plots/",PATH,"Topology/centrality_all_hubs_bottlenecks_TFs_poorly_predicted.pdf"),
+pdf(paste0("Plots/",PATH,
+           # "Topology/centrality_all_hubs_bottlenecks_TFs.pdf"),
+           "Topology/centrality_all_hubs_bottlenecks_TFs_poorly_predicted.pdf"),
     # height = 10, width = 12)
     height = 12, width = 12)
-# ggarrange(plotlist = plot.list, align = "hv", ncol = 3, nrow = 4)
+# ggarrange(plotlist = plot.list[1:12], align = "hv", ncol = 3, nrow = 4)
 ggarrange(plotlist = plot.list, align = "hv", ncol = 3, nrow = 5)
 dev.off()
 
