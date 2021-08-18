@@ -1,0 +1,98 @@
+PMID- 16762362
+OWN - NLM
+STAT- MEDLINE
+DCOM- 20060814
+LR  - 20170922
+IS  - 0022-2836 (Print)
+IS  - 0022-2836 (Linking)
+VI  - 360
+IP  - 1
+DP  - 2006 Jun 30
+TI  - Comprehensive analysis of combinatorial regulation using the transcriptional 
+      regulatory network of yeast.
+PG  - 213-27
+AB  - Studies on various model systems have shown that a relatively small number of 
+      transcription factors can set up strikingly complex spatial and temporal patterns of 
+      gene expression. This is achieved mainly by means of combinatorial or differential 
+      gene regulation, i.e. regulation of a gene by two or more transcription factors 
+      simultaneously or under different conditions. While a number of specific molecular 
+      details of the mechanisms of combinatorial regulation have emerged, our 
+      understanding of the general principles of combinatorial regulation on a genomic 
+      scale is still limited. In this work, we approach this problem by using the largest 
+      assembled transcriptional regulatory network for yeast. A specific network 
+      transformation procedure was used to obtain the co-regulatory network describing the 
+      set of all significant associations among transcription factors in regulating common 
+      target genes. Analysis of the global properties of the co-regulatory network 
+      suggested the presence of two classes of regulatory hubs: (i) those that make many 
+      co-regulatory associations, thus serving as integrators of disparate cellular 
+      processes; and (ii) those that make few co-regulatory associations, and thereby 
+      specifically regulate one or a few major cellular processes. Investigation of the 
+      local structure of the co-regulatory network revealed a significantly higher than 
+      expected modular organization, which might have emerged as a result of selection by 
+      functional constraints. These constraints probably emerge from the need for 
+      extensive modular backup and the requirement to integrate transcriptional inputs of 
+      multiple distinct functional systems. We then explored the transcriptional control 
+      of three major regulatory systems (ubiquitin signaling, protein kinase and 
+      transcriptional regulation systems) to understand specific aspects of their upstream 
+      control. As a result, we observed that ubiquitin E3 ligases are regulated primarily 
+      by unique transcription factors, whereas E1 and E2 enzymes share common 
+      transcription factors to a much greater extent. This suggested that the deployment 
+      of E3s unique to specific functional contexts may be mediated significantly at the 
+      transcriptional level. Likewise, we were able to uncover evidence for much higher 
+      upstream transcription control of transcription factors themselves, in comparison to 
+      components of other regulatory systems. We believe that the results presented here 
+      might provide a framework for testing the role of co-regulatory associations in 
+      eukaryotic transcriptional control.
+FAU - Balaji, S
+AU  - Balaji S
+AD  - National Center for Biotechnology Information, National Library of Medicine, 
+      National Institutes of Health, Bethesda 20894, USA. sbalaji@ncbi.nlm.nih.gov
+FAU - Babu, M Madan
+AU  - Babu MM
+FAU - Iyer, Lakshminarayan M
+AU  - Iyer LM
+FAU - Luscombe, Nicholas M
+AU  - Luscombe NM
+FAU - Aravind, L
+AU  - Aravind L
+LA  - eng
+GR  - MC_U105185859/Medical Research Council/United Kingdom
+GR  - Intramural NIH HHS/United States
+PT  - Journal Article
+PT  - Research Support, N.I.H., Intramural
+DEP - 20060503
+PL  - England
+TA  - J Mol Biol
+JT  - Journal of molecular biology
+JID - 2985088R
+RN  - 0 (Fungal Proteins)
+RN  - 0 (Transcription Factors)
+SB  - IM
+MH  - Algorithms
+MH  - Chromatin Immunoprecipitation
+MH  - Computational Biology
+MH  - Evolution, Molecular
+MH  - Fungal Proteins/physiology
+MH  - Gene Expression Regulation, Fungal
+MH  - *Genes, Fungal
+MH  - Genome, Fungal
+MH  - Models, Biological
+MH  - Models, Genetic
+MH  - Saccharomyces cerevisiae/physiology
+MH  - Transcription Factors/*physiology
+MH  - *Transcription, Genetic
+MH  - *Yeasts
+EDAT- 2006/06/10 09:00
+MHDA- 2006/08/15 09:00
+CRDT- 2006/06/10 09:00
+PHST- 2006/01/16 00:00 [received]
+PHST- 2006/04/01 00:00 [revised]
+PHST- 2006/04/14 00:00 [accepted]
+PHST- 2006/06/10 09:00 [pubmed]
+PHST- 2006/08/15 09:00 [medline]
+PHST- 2006/06/10 09:00 [entrez]
+AID - S0022-2836(06)00493-1 [pii]
+AID - 10.1016/j.jmb.2006.04.029 [doi]
+PST - ppublish
+SO  - J Mol Biol. 2006 Jun 30;360(1):213-27. doi: 10.1016/j.jmb.2006.04.029. Epub 2006 May 
+      3.
