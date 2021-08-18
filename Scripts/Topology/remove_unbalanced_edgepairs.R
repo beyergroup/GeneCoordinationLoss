@@ -1,3 +1,7 @@
+source("Scripts/functions.R")
+
+# network without indirect effects
+
 net_pcc <- readRDS("/data/public/adesous1/GeneCorrelation/Data/Networks/Human/stabsel_pcclasso_network_Hs.rds")
 net_pcc <- as.matrix(net_pcc)
 
@@ -25,3 +29,24 @@ e <- e[rowSums(e == 0) == 0,]
 
 smoothScatter(x = e[,1], y = e[,2], xlab = "", ylab = "", main = "In- vs out-going edges")
 plot(x = e[,1], y = e[,2], xlab = "", ylab = "", main = "In- vs out-going edges")
+
+
+
+## full network
+
+n <- readRDS("/data/public/adesous1/GeneCorrelation/Data/Networks/Human/stabsel_network_Hs.rds")
+n <- as.matrix(n)
+net <- matrix(data = 0,
+              nrow = length(union(colnames(n),rownames(n))),
+              ncol = length(union(colnames(n),rownames(n))),
+              dimnames = list(union(colnames(n),rownames(n)),
+                              union(colnames(n),rownames(n))))
+net[rownames(n),colnames(n)] <- n
+rm(n); gc()
+
+net <- RemoveResEdges(net, threshold = 0.1)
+saveRDS(net, "/data/public/adesous1/GeneCorrelation/Data/Networks/Human/stabsel_network_Hs_filtered.rds")
+
+e <- apply(which(upper.tri(net), arr.ind = T), 1, function(x) c(net[x[1],x[2]], net[x[2],x[1]]))
+e <- t(e)
+e <- e[rowSums(e == 0) == 0,]

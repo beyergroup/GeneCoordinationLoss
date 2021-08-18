@@ -1,9 +1,10 @@
 # Compute correlations between network predictions and original data
 
 # PREDICTION_FOLDER = "Outputs/Human_Network/stabsel/Predictability/AgeTissue"
+PREDICTION_FOLDER = "Outputs/Human_Network/stabsel/Predictability/Tissue"
 # PREDICTION_FOLDER = "Outputs/Human_Network/stabsel_pcclasso/Predictability"
 # PREDICTION_FOLDER = "Outputs/Human_Network/stabsel_pcclasso_filter01/Predictability/AgeTissue"
-PREDICTION_FOLDER = "Outputs/Human_Network/stabsel_randomized/Predictability/Tissue"
+# PREDICTION_FOLDER = "Outputs/Human_Network/stabsel_randomized/Predictability/Tissue"
 
 DATA_FOLDER = "GTEx_Networks/Tissue_Networks/Outputs"
 # DATA_FOLDER = "GTEx_Networks/Age_Networks/Outputs"

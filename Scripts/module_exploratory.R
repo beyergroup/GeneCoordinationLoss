@@ -1,7 +1,7 @@
 # Compare original to re-clustered modules
 
 net = "stabsel"
-# net = "stabsel_pcclasso_filter01"
+# net = "stabsel_pcclasso"
 
 .libPaths(c("Resources/Rlibs/R-4.0.3",.libPaths()))
 library(igraph, lib.loc = "Resources/Rlibs/R-4.0.3/")
@@ -18,7 +18,7 @@ for(method in names(methods)){
   modules <- readRDS(paste0("Outputs/Human_Network/",net,"/Topology/Modules/modules_absweights_",method,".rds"))
   original_membership <- membership(modules)
   
-  # biggest original modules (over 1000 genes)
+  # 3 biggest original modules
   big_original_modules <- head(names(sort(table(original_membership), decreasing = T)), 3)
   
   # load GO enrichments after iterative reclustering
@@ -158,7 +158,7 @@ E(current_graph)$width <- abs(E(current_graph)$weight)*2
 pdf(paste0("Plots/Human_Network/",net,"/Topology/ribosome_network_",method,"_modules.pdf"))
 plot(current_graph, layout = layout_nicely, vertex.size = 5,
      edge.curved = .1, vertex.label.dist = 1, edge.arrow.size = .2,
-     vertex.frame.color = NA, vertex.label.color = "black",
+     vertex.frame.color = NA, vertex.label.color = "black", 
      vertex.label.family = "Helvetica", vertex.label.cex = .8,
-     main = "Ribosome", sub = paste0("Colored by ",methods[method]," module"))
+     main = "Ribosome", sub = paste0("Colored by ",methods[method]," module"), add = T)
 dev.off()

@@ -1,4 +1,41 @@
-# topGO analysis --------------------------------------------------------------
+# Data handling ---------------------------------------------------------------
+
+DataENSGToSymbol <- function(data,
+  conversion_file = "Resources/ensembl_idversion_GTExDESeq2_symbolChrStart.txt",
+  remove_dup = F){
+  
+  table <- read.delim(conversion_file)
+  rownames(data) <- sapply(rownames(data),
+                           function(c) strsplit(c, split = "\\.")[[1]][1])
+  rnames <- table[match(rownames(data), table$ensembl_gene_id),"symbol"]
+  data <- data[!is.na(rnames),]
+  rnames <- rnames[!is.na(rnames)]
+  
+  if(remove_dup){
+    data <- data[-which(rnames %in% rnames[duplicated(rnames)]),]
+    rnames <- rnames[-which(rnames %in% rnames[duplicated(rnames)])]
+  }
+  
+  rownames(data) <- rnames
+  rm(table,rnames); gc()
+  
+  return(data)
+}
+
+
+VectorENSGToSymbol <- function(x,
+  conversion_file = "Resources/ensembl_idversion_GTExDESeq2_symbolChrStart.txt"){
+  
+  table <- read.delim(conversion_file)
+  x <- sapply(x, function(c) strsplit(c, split = "\\.")[[1]][1])
+  symbols <- table[match(x, table$ensembl_gene_id),"symbol"]
+  rm(table); gc()
+  
+  return(symbols)
+}
+
+
+# GO analysis -----------------------------------------------------------------
 
 # foreground, background: character vectors with genes in foreground and background
 # go: either "BP" (biological processes), "MF" (molecular functions), "CC" (cellular components)
@@ -42,31 +79,53 @@ PlotGOEnrich <- function(GOenrich, col, title){
 }
 
 
+# Given a GO ID, returns the genes annotated to that term
+GetGOGenes <- function(GOID){
+  
+  library(biomaRt)
+  
+  ensembl <- useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+  genes <- getBM(attributes = c("ensembl_gene_id","hgnc_symbol","go_id"),
+                 filters = "go", values = GOID, mart = ensembl)
+  
+  return(genes)
+}
+
+
+
 # Network functions -----------------------------------------------------------
 
-# Visualize groups of genes in the network
-# net: igraph object, undirected
-NetVis <- function(net, genes = NULL, col){
+
+# Remove residual edges in edge pairs
+# threshold: ratio of weights (min edge)/(edge pair)
+
+RemoveResEdges <- function(net, threshold = 0.1){
   
-  E(net)$weight <- abs(E(net)$weight)
+  if(any(colnames(net) != rownames(net)))
+    stop("Network rows and columns must match.")
   
-  # adjust visual details
-  V(net)$size <- 2
-  V(net)$frame.color <- "white"
-  V(net)$color <- "orange"
-  V(net)$label <- "" 
-  E(net)$arrow.mode <- 0
+  # indices of upper triangle of net adj matrix, to iterate over
+  # each row corresponds to one edge [i,j] in an edge pair ([i,j], [j,i])
+  ind <- which(upper.tri(net), arr.ind = T)
   
-  # highlight provided genes
+  # compute ratio of weights for each edge pair
+  ratios <- apply(ind, 1,
+      function(x) min(abs(c(net[x[1],x[2]],
+                            net[x[2],x[1]])))/sum(abs(c(net[x[1],x[2]],
+                                                        net[x[2],x[1]]))))
   
+  # select edges with ratios below the threshold - residual edges
+  to_remove <- ind[(ratios < threshold) & (!is.na(ratios)),]
+  rm(ind, ratios); gc()
+  to_remove <- t(apply(to_remove, 1, function(x)
+    switch(which.min(c(abs(net[x[1],x[2]]),abs(net[x[2],x[1]]))),
+           c(x[1],x[2]),
+           c(x[2],x[1]))))
   
-  # pick layout
-  # ws  <-  c(1, rep(100, ecount(net)-1))
-  # lw <- layout_with_fr(net, weights=ws)
+  # set residual edges to 0
+  net[to_remove] <- 0
   
-  plot(net, layout = layout_kk)
-  
-  return()
+  return(net)
 }
 
 
@@ -87,4 +146,21 @@ PredictNet <- function(net, centered_data, maxiter){
   }
   
   return(prediction[targets,])
+}
+
+
+
+
+PlotNet <- function(graph, title, layout = "fr"){
+  
+  p <- plot(current_graph, layout = switch(layout,
+                                           "lgl" = layout_with_lgl,
+                                           "fr" = layout_with_fr,
+                                           "nicely" = layout_nicely),
+       vertex.size = 5, edge.curved = .1, vertex.label.dist = 1,
+       edge.arrow.size = .2, vertex.frame.color = NA,
+       vertex.label.color = "grey50", vertex.label.family = "Helvetica",
+       vertex.label.cex = .8, main = title, margin = 0)
+  
+  return(p)
 }

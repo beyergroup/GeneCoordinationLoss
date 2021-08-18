@@ -57,7 +57,7 @@ rm(ww,w,method,modules); gc()
 
 # Find communities within large communities (reclustering)
 
-for(method in names(methods)){
+for(method in names(methods[1:2])){
   
   # read in modules
   modules <- readRDS(paste0("Outputs/Human_Network/",net,
@@ -103,7 +103,7 @@ rm(current_abs_weights,current_graph,current_submodules,modules,membership_log);
 # Look at modules
 
 pdf(paste0("Plots/Human_Network/",net,"/Topology/community_sizes_method_compare_iterreclustering.pdf"))
-for(method in names(methods)){
+for(method in names(methods[1:2])){
   
   membership <- readRDS(paste0("Outputs/Human_Network/",net,
                                "/Topology/Modules/membership_absweights_",

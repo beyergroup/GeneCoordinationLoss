@@ -12,8 +12,12 @@ POORLY_PRED_L_COL = "lightcoral"
 COR_THRE = 0.2
 MEAN_THRE = 8
 LOW_MEAN_THRE = 2
+
 net = "stabsel"
-NET_FILE = "Data/Networks/Human/stabsel_network_Hs.rds"
+NET_FILE = "Data/Networks/Human/stabsel_network_Hs_filtered.rds"
+# net = "stabsel_pcclasso_filter01"
+# NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs_filtered.rds"
+
 COR_FOLDER = paste0("Outputs/Human_Network/",net,"/Predictability/Tissue")
 palette <- c("Poorly Predicted\n(High expr.)" = POORLY_PRED_H_COL,
              "Poorly Predicted\n(Low expr.)" = POORLY_PRED_L_COL,
@@ -33,7 +37,7 @@ saveRDS(correlations, paste0("Outputs/Human_Network/",net,"/Predictability/Tissu
 
 # Call poorly predicted genes in cross tissue
 
-poorly_predicted <- names(which(correlations[,"CrossTissue"] < COR_THRE)) # 4233 genes
+poorly_predicted <- names(which(correlations[,"CrossTissue"] < COR_THRE)) # 4217 genes
 poorly_predicted_all <- apply(correlations, 2, function(x) names(which(x < COR_THRE)))
 
 saveRDS(poorly_predicted,
@@ -89,8 +93,8 @@ rm(network_matrix); gc()
 
 
 # Split poorly predicted into highly and lowly expressed
-poorly_predicted_H <- poorly_predicted[gtex.info[poorly_predicted,"Means"] > MEAN_THRE]
-poorly_predicted_L <- poorly_predicted[gtex.info[poorly_predicted,"Means"] <= MEAN_THRE]
+poorly_predicted_H <- poorly_predicted[info[poorly_predicted,"GTExMeans"] > MEAN_THRE]
+poorly_predicted_L <- poorly_predicted[info[poorly_predicted,"GTExMeans"] <= MEAN_THRE]
 saveRDS(poorly_predicted_H,
         paste0("Outputs/Human_Network/",net,"/Predictability/Tissue/poorly_predicted_crosstissue_H.rds"))
 saveRDS(poorly_predicted_L,
