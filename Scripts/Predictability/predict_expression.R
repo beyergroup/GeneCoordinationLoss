@@ -1,24 +1,30 @@
 # Prediction of expression based on the networks
 
-# NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs.rds"
-# PATH = "Human_Network/stabsel_pcclasso/"
-# NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs_filtered.rds"
-# PATH = "Human_Network/stabsel_pcclasso_filter01/"
-NET_FILE = "Data/Networks/Human/stabsel_network_Hs_filtered.rds"
-PATH = "Human_Network/stabsel/"
-# NET_FILE = "Data/Networks/Human/stabsel_randomized_network_Hs.rds"
-# PATH = "Human_Network/stabsel_randomized/"
+args <- commandArgs(trailingOnly = T)
+NET = args[1]
+TYPE = args[2]
+RAND = as.logical(args[3])
 
-DATA_FOLDER = "GTEx_Networks/Tissue_Networks/Outputs"
-# DATA_FOLDER = "GTEx_Networks/Age_Networks/Outputs"
-# DATA_FOLDER = "GTEx_Networks/AgeTissue_Networks/Outputs"
+NET = "stabsel" # "stabsel_pcclasso"
+TYPE = "Tissue" # "AgeTissue" # "Age"
+RAND = F # T
 
-source("functions.R")
+if(RAND){
+  net_file = paste0("Data/Networks/Human/",NET,"_randomized_network_Hs_filtered.rds")
+  path = paste0("Human_Network/",NET,"_randomized/","Predictability/",TYPE,"/")
+} else{
+  net_file = paste0("Data/Networks/Human/",NET,"_network_Hs_filtered.rds")
+  path = paste0("Human_Network/",NET,"/Predictability/",TYPE,"/")
+}
+dir.create(paste0("Outputs/",path))
 
-setwd("../")
+data_folder = paste0("GTEx_Networks/",TYPE,"_Networks/Outputs")
 
-net <- as.matrix(readRDS(NET_FILE))
-data_files <- list.files(DATA_FOLDER, pattern = "_sampled_centered_data.rds", full.names = T)
+source("Scripts/functions.R")
+
+
+net <- as.matrix(readRDS(net_file))
+data_files <- list.files(data_folder, pattern = "_sampled_centered_data.rds", full.names = T)
 
 for(file in data_files){
   
@@ -36,7 +42,7 @@ for(file in data_files){
   rm(conversion_table,rnames); gc()
   
   pred <- PredictNet(net, centered_data, maxiter = 1)
-  saveRDS(pred, paste0("Outputs/",PATH,"Predictability/Tissue/",
+  saveRDS(pred, paste0("Outputs/",path,
                        gsub("sampled_centered_data","sampled_net_predictions",prefix)))
   
   rm(centered_data,pred,prefix); gc()

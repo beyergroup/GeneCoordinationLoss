@@ -4,7 +4,8 @@
 library(topGO, lib.loc = "/data/public/adesous1/GeneCorrelation/Resources/Rlibs/R-4.0.3")
 library(reshape2)
 library(ggplot2)
-source("functions.R")
+library(ggpubr)
+source("Scripts/functions.R")
 
 POORLY_PRED_COL = "tomato2"
 POORLY_PRED_H_COL = "tomato3"
@@ -13,17 +14,15 @@ COR_THRE = 0.2
 MEAN_THRE = 8
 LOW_MEAN_THRE = 2
 
-net = "stabsel"
-NET_FILE = "Data/Networks/Human/stabsel_network_Hs_filtered.rds"
-# net = "stabsel_pcclasso_filter01"
-# NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs_filtered.rds"
+# net = "stabsel"
+# NET_FILE = "Data/Networks/Human/stabsel_network_Hs_filtered.rds"
+net = "stabsel_pcclasso"
+NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs_filtered.rds"
 
 COR_FOLDER = paste0("Outputs/Human_Network/",net,"/Predictability/Tissue")
 palette <- c("Poorly Predicted\n(High expr.)" = POORLY_PRED_H_COL,
              "Poorly Predicted\n(Low expr.)" = POORLY_PRED_L_COL,
              "Others" = "darkgrey")
-
-setwd("../")
 
 
 # Load GTEx correlations

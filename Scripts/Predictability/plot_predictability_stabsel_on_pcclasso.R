@@ -1,15 +1,15 @@
 # Plot predictability of genes not well predicted by stabsel network
 
 NET_FILE = "Data/Networks/Human/stabsel_pcclasso_network_Hs_filtered.rds"
-net = "stabsel_pcclasso_filter01"
-
+net = "stabsel_pcclasso"
+POORLY_PRED_COL = "tomato2"
 
 # Load all correlations
 
 files <- list.files(paste0("Outputs/Human_Network/",net,"/Predictability/Tissue"),
                     pattern = "correlations.rds", full.names = T)
 correlations <- sapply(files, readRDS)
-colnames(correlations) <- sapply(cor_files,
+colnames(correlations) <- sapply(files,
     function(x) strsplit(tail(strsplit(x, "/")[[1]], 1), "_")[[1]][1])
 saveRDS(correlations, paste0("Outputs/Human_Network/",net,"/Predictability/Tissue/correlations_all.rds"))
 

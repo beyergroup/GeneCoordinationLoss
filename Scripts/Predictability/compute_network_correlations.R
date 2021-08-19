@@ -1,17 +1,19 @@
 # Compute correlations between network predictions and original data
 
-# PREDICTION_FOLDER = "Outputs/Human_Network/stabsel/Predictability/AgeTissue"
-PREDICTION_FOLDER = "Outputs/Human_Network/stabsel/Predictability/Tissue"
-# PREDICTION_FOLDER = "Outputs/Human_Network/stabsel_pcclasso/Predictability"
-# PREDICTION_FOLDER = "Outputs/Human_Network/stabsel_pcclasso_filter01/Predictability/AgeTissue"
-# PREDICTION_FOLDER = "Outputs/Human_Network/stabsel_randomized/Predictability/Tissue"
+args <- commandArgs(trailingOnly = T)
+NET = args[1]
+TYPE = args[2]
+RAND = as.logical(args[3])
 
-DATA_FOLDER = "GTEx_Networks/Tissue_Networks/Outputs"
-# DATA_FOLDER = "GTEx_Networks/Age_Networks/Outputs"
-# DATA_FOLDER = "GTEx_Networks/AgeTissue_Networks/Outputs"
+NET = "stabsel"
+TYPE = "Tissue"
+RAND = F
 
-files <- list.files(PREDICTION_FOLDER, pattern = "net_predictions.rds", full.names = T)
-data_files <- list.files(DATA_FOLDER, pattern = "_sampled_centered_data.rds", full.names = T)
+prediction_folder = paste0("Outputs/Human_Network/",NET,"/Predictability/",TYPE)
+data_folder = paste0("GTEx_Networks/",TYPE,"_Networks/Outputs")
+
+files <- list.files(prediction_folder, pattern = "net_predictions.rds", full.names = T)
+data_files <- list.files(data_folder, pattern = "_sampled_centered_data.rds", full.names = T)
 
 for(i in 1:length(files)){
   
