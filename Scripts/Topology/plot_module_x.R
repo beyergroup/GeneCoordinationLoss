@@ -17,6 +17,8 @@ NET = "stabsel"
 METHOD = "greedy"
 # "rwalk"
 
+center_in_crosstissue = T
+
 labels <- c("expression" = "Corrected expression", "variance" = "Expr. variance",
             "predictability" = "Predictability", "correlation" = "Within-module cor.")
 method_labels <- c("greedy" = "Greedy", "rwalk" = "Random Walk")
@@ -68,7 +70,18 @@ for(TYPE in names(labels)){
       #   theme(text = element_text(size = 20), legend.position = "bottom"))
       # dev.off()
       
-      m <- m[,colnames(m) != "CrossTissue"]
+      if(center_in_crosstissue){
+        m <- sweep(m[,colnames(m) != "CrossTissue"], 1, m[,"CrossTissue"])
+        fname <- paste0("Plots/Human_Network/",NET,"/Topology/Modules/mean_",
+                        TYPE,"_modules_",METHOD,"_heatmap_centered_crosstissue.pdf")
+        scale_max <- max(abs(na.omit(subset(plot.data,
+                                            Tissue != "CrossTissue")$value)))
+      } else{
+        m <- m[,colnames(m) != "CrossTissue"]
+        
+        fname <- paste0("Plots/Human_Network/",NET,"/Topology/Modules/mean_",
+                        TYPE,"_modules_",METHOD,"_heatmap.pdf")
+      }
       m <- t(m)
       
       m <- m[,colnames(m) %in% names(clusters)]
@@ -82,8 +95,7 @@ for(TYPE in names(labels)){
                annotation_col = data.frame("Expression" = abs_expr, "Group" = as.factor(clusters)),
                annotation_colors = list("Expression" = c("white","black"), "Group" = palette),
                annotation_names_col = F, cellwidth = 1.5, cellheight = 10,
-               filename = paste0("Plots/Human_Network/",NET,"/Topology/Modules/mean_",
-                                 TYPE,"_modules_",METHOD,"_heatmap.pdf"),
+               filename = fname,
                show_colnames = F, main = paste0(labels[TYPE], " (",
                                                 method_labels[METHOD]," modules)"))
     }
