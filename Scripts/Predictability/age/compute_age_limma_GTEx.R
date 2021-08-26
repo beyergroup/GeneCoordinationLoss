@@ -1,11 +1,18 @@
 # DE with age in GTEx tissues
 
+args = commandArgs(trailingOnly=TRUE)
+NET = args[1]
+TYPE = args[2]
+
 library(limma, lib.loc = "Resources/Rlibs/R-4.0.3/")
 
 setwd("../")
 
-# files <- list.files("GTEx_Networks/AgeTissue_Networks/Outputs", pattern = "sampled_data.rds", full.names = T)
-files <- list.files("Outputs/Human_Network/stabsel/Predictability/AgeTissue", pattern = "sampled_delta.rds", full.names = T)
+files <- switch(TYPE,
+                "delta" = list.files(paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue"),
+                                     pattern = "sampled_delta.rds", full.names = T),
+                "expression" = list.files("GTEx_Networks/AgeTissue_Networks/Outputs",
+                                          pattern = "sampled_data.rds", full.names = T))
 
 tissues <- unique(sapply(files, function(x) strsplit(tail(strsplit(x,"/")[[1]],1),"_")[[1]][1]))
 
@@ -26,21 +33,25 @@ for(tissue in tissues){
   fit <- eBayes(fit)
   print(topTable(fit, coef = "AgeGroupOld"))
 
-  # coefficients <- sapply(rownames(data), function(gene){
-  #   fit.data <- data.frame("Expression" = data[gene,], "AgeGroup" = metadata$AgeGroup)
-  #   fit <- lm(Expression ~ AgeGroup, fit.data)
-  #   return(summary(fit)$coefficients["AgeGroupOld",])
-  # })
-  # coefficients <- t(coefficients)
-  # coefficients <- cbind(coefficients, "p.adj" = p.adjust(coefficients[,"Pr(>|t|)"], method = "fdr"))
-  # 
-  # message(tissue,"\n",min(coefficients[,"Pr(>|t|)"]))
+  if(TYPE == "expression"){
+    coefficients <- sapply(rownames(data), function(gene){
+      fit.data <- data.frame("Expression" = data[gene,], "AgeGroup" = metadata$AgeGroup)
+      fit <- lm(Expression ~ AgeGroup, fit.data)
+      return(summary(fit)$coefficients["AgeGroupOld",])
+    })
+    coefficients <- t(coefficients)
+    coefficients <- cbind(coefficients, "p.adj" = p.adjust(coefficients[,"Pr(>|t|)"], method = "fdr"))
+
+    message(tissue,"\n",min(coefficients[,"Pr(>|t|)"]))
+  }
   
-  # saveRDS(coefficients, paste0("Outputs/GTEx/AgeDE/",tissue,"_sampled_ageLM.rds"))
-  saveRDS(fit, paste0("Outputs/Human_Network/stabsel/Predictability/AgeTissue/",tissue,"_sampled_ageDP.rds"))
-  # rm(y,o,data,metadata,coefficients); gc()
+  if(TYPE == "expression"){
+    saveRDS(fit, paste0("Outputs/GTEx/AgeDE/",tissue,"_sampled_ageDE.rds"))
+    saveRDS(coefficients, paste0("Outputs/GTEx/AgeDE/",tissue,"_sampled_ageLM.rds"))
+  } else if(TYPE == "delta"){
+    saveRDS(fit, paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue/",tissue,"_sampled_ageDP.rds"))
+  }
   
-  # saveRDS(fit, paste0("Outputs/GTEx/AgeDE/",tissue,"_sampled_ageDE.rds"))
   rm(y,o,data,metadata,mm,fit); gc()
   
 }

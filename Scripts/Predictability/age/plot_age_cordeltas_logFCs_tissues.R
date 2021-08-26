@@ -5,19 +5,18 @@ library(reshape2, lib.loc = "Resources/Rlibs/R-4.0.3/")
 library(ggplot2, lib.loc = "Resources/Rlibs/R-4.0.3/")
 library(ggpubr, lib.loc = "Resources/Rlibs/R-4.0.3/")
 
-net = "stabsel"
-# net = "stabsel_pcclasso_filter01"
+args = commandArgs(trailingOnly=TRUE)
+NET = args[1]
+exclude_poorly_predicted = as.logical(args[2])
 
-exclude_poorly_predicted = T
 
-
-predictability_files <- list.files(paste0("Outputs/Human_Network/",net,"/Predictability/AgeTissue"),
+predictability_files <- list.files(paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue"),
   pattern = "_sampled_ageDP.rds", full.names = T)
 expression_files <- list.files("Outputs/GTEx/AgeDE",
   pattern = "_ageDE.rds", full.names = T)
 
 if(exclude_poorly_predicted){
-  poorly_predicted <- readRDS(paste0("Outputs/Human_Network/",net,
+  poorly_predicted <- readRDS(paste0("Outputs/Human_Network/",NET,
                                      "/Predictability/Tissue/poorly_predicted_crosstissue.rds"))
 }
 
@@ -80,26 +79,26 @@ for(tissue in tissues){
 
 if(exclude_poorly_predicted){
   
-  pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age_DE_nopoorlypred.pdf"),
+  pdf(paste0("Plots/Human_Network/",NET,"/Predictability/predictability_GTEx_subsets_tissue_age_DE_nopoorlypred.pdf"),
       height = 10, width = 16)
-  ggarrange(plotlist = plots)
+  print(ggarrange(plotlist = plots))
   dev.off()
   
-  pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age_nopoorlypred.pdf"),
+  pdf(paste0("Plots/Human_Network/",NET,"/Predictability/predictability_GTEx_subsets_tissue_age_nopoorlypred.pdf"),
       height = 8, width = 16)
-  ggarrange(plotlist = densities)
+  print(ggarrange(plotlist = densities))
   dev.off()
   
 } else{
   
-  pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age_DE.pdf"),
+  pdf(paste0("Plots/Human_Network/",NET,"/Predictability/predictability_GTEx_subsets_tissue_age_DE.pdf"),
     height = 10, width = 16)
-  ggarrange(plotlist = plots)
+  print(ggarrange(plotlist = plots))
   dev.off()
   
-  pdf(paste0("Plots/Human_Network/",net,"/Predictability/predictability_GTEx_subsets_tissue_age.pdf"),
+  pdf(paste0("Plots/Human_Network/",NET,"/Predictability/predictability_GTEx_subsets_tissue_age.pdf"),
       height = 8, width = 16)
-  ggarrange(plotlist = densities)
+  print(ggarrange(plotlist = densities))
   dev.off()
 }
 

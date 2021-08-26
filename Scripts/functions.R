@@ -164,3 +164,6 @@ PlotNet <- function(graph, title, layout = "fr"){
   
   return(p)
 }
+
+age_palette <- c("20-29" = "#126782", "30-39" = "#219EBC",
+                 "50-59" = "#FD9E02", "60-69" = "#FB8500")

@@ -1,6 +1,9 @@
 # Compute delta matrices
 
-PREDICTION_FOLDER = "Outputs/Human_Network/stabsel/Predictability/AgeTissue"
+args = commandArgs(trailingOnly=TRUE)
+NET = args[1]
+
+PREDICTION_FOLDER = paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue")
 DATA_FOLDER = "GTEx_Networks/AgeTissue_Networks/Outputs"
 
 setwd("../")
