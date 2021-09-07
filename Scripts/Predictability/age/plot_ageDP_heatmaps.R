@@ -2,6 +2,7 @@
 # of genes with significant age-related changes in predictability
 
 source("Scripts/functions.R")
+library(limma, lib.loc = "Resources/Rlibs/R-4.0.3/")
 library(pheatmap, lib.loc = "Resources/Rlibs/R-4.0.3/")
 library(ggpubr, lib.loc = "Resources/Rlibs/R-4.0.3/")
 
