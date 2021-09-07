@@ -156,9 +156,9 @@ V(current_graph)$color <- color_legend[V(current_graph)$Submodule]
 E(current_graph)$width <- abs(E(current_graph)$weight)*2
 
 pdf(paste0("Plots/Human_Network/",net,"/Topology/ribosome_network_",method,"_modules.pdf"))
-plot(current_graph, layout = layout_nicely, vertex.size = 5,
+plot(current_graph, layout = layout_with_fr, vertex.size = 5,
      edge.curved = .1, vertex.label.dist = 1, edge.arrow.size = .2,
      vertex.frame.color = NA, vertex.label.color = "black", 
      vertex.label.family = "Helvetica", vertex.label.cex = .8,
-     main = "Ribosome", sub = paste0("Colored by ",methods[method]," module"), add = T)
+     main = "Ribosome", sub = paste0("Colored by ",methods[method]," module"))
 dev.off()
