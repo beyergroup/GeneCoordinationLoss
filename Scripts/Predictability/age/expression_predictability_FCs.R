@@ -17,7 +17,7 @@ files <- list.files("Outputs/Human_Network/stabsel/Predictability/AgeTissue",
                     pattern = "_sampled_ageDP.rds", full.names = T)
 
 if(exclude_poorly_predicted){
-  poorly_predicted <- readRDS("Outputs/Human_Network/stabsel/Predictability/Tissue/poorly_predicted_crosstissue.rds")
+  well_predicted_genes <- readRDS("Outputs/5_Predictability/well_predicted_genes.rds")
 }
 
 
@@ -29,7 +29,7 @@ for(file in files){
   ageDP <- limma::topTable(fit = ageDP, coef = "AgeGroupOld", number = nrow(ageDP))
   
   if(exclude_poorly_predicted){
-    ageDP <- ageDP[!(rownames(ageDP) %in% poorly_predicted),]
+    ageDP <- ageDP[intersect(rownames(ageDP),well_predicted_genes[[tissue]]),]
   }
   
   # increased predictability
@@ -43,10 +43,10 @@ for(file in files){
   down_plot <- PlotGOEnrich(GObp_down, colors[1], "Decreased deviation with age")
   
   if(exclude_poorly_predicted){
-    pdf(paste0("Plots/Human_Network/stabsel/Predictability/delta_DE_age/agetrends_",tissue,"_GObp_nopoorlypred.pdf"),
+    pdf(paste0("Plots/5_Predictability/delta_DE_age/agetrends_",tissue,"_GObp_nopoorlypred.pdf"),
         height = gobp_dims[[tissue]][1], width = gobp_dims[[tissue]][2])
   } else{
-    pdf(paste0("Plots/Human_Network/stabsel/Predictability/delta_DE_age/agetrends_",tissue,"_GObp.pdf"),
+    pdf(paste0("Plots/5_Predictability/delta_DE_age/agetrends_",tissue,"_GObp.pdf"),
         height = gobp_dims[[tissue]][1], width = gobp_dims[[tissue]][2])
   }
   up_plot

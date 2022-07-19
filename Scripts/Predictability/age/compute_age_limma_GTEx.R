@@ -8,9 +8,14 @@ library(limma, lib.loc = "Resources/Rlibs/R-4.0.3/")
 
 setwd("../")
 
+method = "rwalk"
+
 files <- switch(TYPE,
                 "delta" = list.files(paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue"),
                                      pattern = "sampled_delta.rds", full.names = T),
+                "MSE" = list.files(paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue"),
+                                   pattern = paste0("sampled_",method,"modules_mse.rds"),
+                                   full.names = T),
                 "expression" = list.files("GTEx_Networks/AgeTissue_Networks/Outputs",
                                           pattern = "sampled_data.rds", full.names = T))
 
@@ -49,7 +54,11 @@ for(tissue in tissues){
     saveRDS(fit, paste0("Outputs/GTEx/AgeDE/",tissue,"_sampled_ageDE.rds"))
     saveRDS(coefficients, paste0("Outputs/GTEx/AgeDE/",tissue,"_sampled_ageLM.rds"))
   } else if(TYPE == "delta"){
-    saveRDS(fit, paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue/",tissue,"_sampled_ageDP.rds"))
+    saveRDS(fit, paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue/",
+                        tissue,"_sampled_ageDP.rds"))
+  } else if(TYPE == "MSE"){
+    saveRDS(fit, paste0("Outputs/Human_Network/",NET,"/Predictability/AgeTissue/",
+                        tissue,"_sampled_",method,"modules_ageDMSE.rds"))
   }
   
   rm(y,o,data,metadata,mm,fit); gc()
