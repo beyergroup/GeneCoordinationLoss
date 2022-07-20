@@ -19,7 +19,6 @@ plot_grid(gtex.heat.plot, gtex.lm.plot,
 dev.off()
 
 # to adjust:
-# - make it square
 # - match correlation scales between 3 heatmaps
 # - match column and row heatmap order of TS data to GTEx ones
 # - make heatmap column and row titles smaller

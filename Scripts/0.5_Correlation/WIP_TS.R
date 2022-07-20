@@ -187,8 +187,9 @@ tissue = "Merged_merged"
 for(method in c("Smart-seq2","10X")){
   
   h <- Heatmap(within_cor[[method]][[tissue]][[complex]], col = inferno(20),
-               row_title = paste0("Genes in complex\n(",complex,")"),
-               column_title = paste0("Genes in complex\n(",complex,")"),
+               # row_title = paste0("Genes in complex\n(",complex,")"),
+               # column_title = paste0("Genes in complex\n(",complex,")"),
+               row_title = "Ribosomal genes", column_title = "Ribosomal genes",
                show_row_names = FALSE, show_column_names = FALSE,
                show_row_dend = FALSE, show_column_dend = FALSE,
                border_gp = gpar(col = "black"),
@@ -211,9 +212,10 @@ for(file in files_SS2){
   cell_type <- gsub("alldetected_genes_","",file)
   cell_type <- gsub("_smartseq2_quantile.rds","",cell_type)
   
-  file <- gsub("_quantile","",file)
+  file <- gsub("_quantile","_centered",file)
+  file <- gsub("alldetected","quantified",file)
   
-  data <- readRDS(paste0("Outputs/3_TSDataPrep/Normalized/Subset/",
+  data <- readRDS(paste0("Outputs/3_TSDataPrep/Centered/",
                          file))
   
   plot.data <- rbind.data.frame(plot.data, data.frame(t(as.matrix(data[genes,])),
@@ -225,9 +227,10 @@ for(file in files_10X){
   cell_type <- gsub("alldetected_genes_","",file)
   cell_type <- gsub("_10X_quantile.rds","",cell_type)
   
-  file <- gsub("_quantile","",file)
+  file <- gsub("_quantile","_centered",file)
+  file <- gsub("alldetected","quantified",file)
   
-  data <- readRDS(paste0("Outputs/3_TSDataPrep/Normalized/Subset/",
+  data <- readRDS(paste0("Outputs/3_TSDataPrep/Centered/",
                          file))
   
   plot.data <- rbind.data.frame(plot.data, data.frame(t(as.matrix(data[genes,])),
