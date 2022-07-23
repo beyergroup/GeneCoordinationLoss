@@ -15,13 +15,13 @@ features.data <- ReadRDS(paste0("Outputs/",WDIR,"/centrality_measures_",
 
 # Create list of plot arguments -----------------------------------------------
 centrality_measures <- names(which(lapply(features.data,class) == "numeric"))
-node_types <- c("All nodes",
+node_types <- c("All genes",
                 names(which(lapply(features.data,class) == "logical")))
 args.mat <- expand.grid(x = centrality_measures,
                         Title = node_types,
                         stringsAsFactors = F)
 args.mat$Color <- COLOR_SCHEME[args.mat$Title]
-args.mat$Subset <- args.mat$Title != "All nodes"
+args.mat$Subset <- args.mat$Title != "All genes"
 
 # Apply plotting functions ----------------------------------------------------
 plot.list <- apply(args.mat, 1,

@@ -5,8 +5,8 @@
 
 # Color schemes ---------------------------------------------------------------
 
-COLOR_SCHEME <- c("All nodes" = "grey",
-                  "Hub nodes" = "darkviolet",
+COLOR_SCHEME <- c("All genes" = "grey",
+                  "Hub genes" = "darkviolet",
                   "Bottlenecks" = "darkmagenta",
                   "TFs" = "mediumvioletred",
                   "Poorly predicted" = "tomato2")
@@ -21,7 +21,7 @@ DIMS[2,] <- c(12,12)
 
 GO_PDF_DIMS <- expand.grid("Net" = c("stabsel","stabsel_filtered","stabsel_filtered_largestCC","stabsel_pcclasso",
                                      "stabsel_pcclasso_filtered","stabsel_pcclasso_filtered_largestCC"),
-                           "Group" = c("Hub nodes","Bottlenecks","Poorly predicted"))
+                           "Group" = c("Hub genes","Bottlenecks","Poorly predicted"))
 GO_PDF_DIMS <- cbind(GO_PDF_DIMS,
                      "Height" = c(8,8,8,12,12,8,10,10,12,7,7,7,7,7,7,7,7,7),
                      "Width" = c(13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13))

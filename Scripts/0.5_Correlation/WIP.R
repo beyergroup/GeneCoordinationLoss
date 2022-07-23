@@ -209,7 +209,7 @@ gtex_files <- list.files("GTEx_Networks/Tissue_Networks/Outputs",
 
 plot.data <- data.frame()
 
-# for(file in gtex_files[grep(paste(tissues,collapse="|"),gtex_files)]){
+
 for(file in gtex_files){
   
   tissue <- strsplit(tail(strsplit(file,"/")[[1]],1),"_")[[1]][1]

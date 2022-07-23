@@ -34,7 +34,7 @@ features.data[["Betweenness"]] <- igraph::centr_betw(graph = g)$res
 # Hub genes
 hubs <- features.data$Gene[head(order(features.data[["Out-Degree"]],
                                       decreasing = T), 100)]
-features.data[["Hub nodes"]] <- features.data$Gene %in% hubs
+features.data[["Hub genes"]] <- features.data$Gene %in% hubs
 
 # Bottlenecks
 bottlenecks <- features.data$Gene[head(order(features.data[["Betweenness"]],
@@ -49,15 +49,15 @@ features.data$TFs <- features.data$Gene %in% TFs
 
 # Compare subsets -------------------------------------------------------------
 
-message(sum(features.data[["Hub nodes"]] & features.data$TFs),"/",
-        sum(features.data[["Hub nodes"]])," TFs in Hubs compared to ",
+message(sum(features.data[["Hub genes"]] & features.data$TFs),"/",
+        sum(features.data[["Hub genes"]])," TFs in Hubs compared to ",
         sum(features.data$TFs),"/",nrow(features.data)," in background")
 
 message(sum(features.data$Bottlenecks & features.data$TFs),"/",
         sum(features.data$Bottleneck)," TFs in Bottlenecks compared to ",
         sum(features.data$TFs),"/",nrow(features.data)," in background")
 
-message(sum(features.data[["Hub nodes"]] & features.data$Bottlenecks),
+message(sum(features.data[["Hub genes"]] & features.data$Bottlenecks),
         " Hubs and Bottlenecks in common")
 
 

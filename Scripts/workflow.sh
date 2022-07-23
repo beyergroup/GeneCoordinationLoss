@@ -20,7 +20,7 @@ done
 
 ## 1. Topology analysis -------------------------------------------------------
 
-for NET in "stabsel" "stabsel_filtered" "stabsel_filtered_largestCC" "stabsel_pcclasso" "stabsel_pcclasso_filtered" "stbasel_pcclasso_filtered_largestCC"
+for NET in "stabsel" "stabsel_filtered" "stabsel_filtered_largestCC"  "stabsel_filtered_trans_largestCC" "stabsel_pcclasso" "stabsel_pcclasso_filtered" "stabsel_pcclasso_filtered_largestCC"
 do
   echo $NET
   ./Scripts/run_topology_analysis.sh ${NET} "1_Topology"
