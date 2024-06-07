@@ -1,42 +1,32 @@
-# Compare LFCs based on Pearson and Spearman correlations
 
-pearson_LFCs <- list.files("Outputs/5_Predictability",
-                           pattern = paste0("corLFCs_YvsO_adj.rds"),
-                           full.names = T)
-spearman_LFCs <- list.files("Outputs/5_Predictability",
-                            pattern = paste0("corLFCs_YvsO_adj_spearman.rds"),
-                            full.names = T)
+SLOPE_DIR = "Outputs/5_Predictability/Age/Age_MaxSubset"
+COR_THRE = "well_predicted"
 
-tissues <- unique(sapply(pearson_LFCs, function(x)
-  strsplit(tail(strsplit(x,"/")[[1]],1),"_")[[1]][1]))
+source("Scripts/functions.R")
 
-plot.data <- data.frame()
 
-for(tissue in tissues){
+files <- list.files(SLOPE_DIR, full.names = T,
+                    pattern = paste0("ageslope_",COR_THRE,"_pearson"))
+
+pdf(paste0("Plots/5_Predictability/Age/Age_MaxSubset/compare_pearson_spearman_",
+           COR_THRE,".pdf"))
+
+for(file in files){
   
-  pearson <- readRDS(pearson_LFCs[grep(tissue,pearson_LFCs,fixed = T)])
-  spearman <- readRDS(spearman_LFCs[grep(tissue,spearman_LFCs,fixed = T)])
+  tissue <- strsplit(tail(strsplit(file,"/")[[1]],1),"_")[[1]][1]
   
-  plot.data <- rbind.data.frame(plot.data,
-                                data.frame("Pearson" = pearson,
-                                           "Spearman" = spearman,
-                                           "Tissue" = tissue))
+  pearson <- ReadRDS(file)[,"Slope"]
+  spearman <- ReadRDS(gsub("_pearson.rds",".rds",file))[,"Slope"]
+  
+  plot.data <- data.frame("Spearman" = spearman[intersect(names(pearson),names(spearman))],
+                          "Pearson" = pearson[intersect(names(pearson),names(spearman))])
+  
+  print(ggplot(plot.data) +
+    geom_point(aes(x = Pearson, y = Spearman)) +
+    geom_abline(slope = 1, intercept = 0) +
+    xlab("Pearson-based slopes") + ylab("Spearman-based slopes") +
+    ggtitle(tissue, paste("Correlation threshold:",COR_THRE)) +
+    theme_classic() + theme(text = element_text(size = 20)))
 }
 
-pdf("Plots/5_Predictability/spearman_pearson_LFCs.pdf",
-    height = 10, width = 16)
-ggplot(plot.data) +
-  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
-  geom_point(aes(x = Pearson, y = Spearman),
-             alpha = .3, size = .5) +
-  facet_wrap(~ Tissue) +
-  xlab("Pearson-based LFC") + ylab("Spearman-based LFC") +
-  theme(text = element_text(size = 20))
 dev.off()
-
-
-# values pretty comparable
-
-dif.data <- subset(plot.data, abs(plot.data$Pearson - plot.data$Spearman) > .5)
-# previous hits that are lost
-
