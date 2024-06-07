@@ -31,9 +31,12 @@ Rscript --vanilla Scripts/${WDIR}/Call_Modules.R ${NET} ${WDIR} "rownormalized" 
 Rscript --vanilla Scripts/${WDIR}/Plot_ModuleFeatures.R ${NET} ${WDIR} "rownormalized" &> Logs/${WDIR}/Plot_ModuleFeatures_${NET}_rownormalized_$(date +%F)--$(date +%H)":"$(date +%M).out
 
 # GO enrichment in computed modules
-Rscript --vanilla Scripts/${WDIR}/Run_GOEnrichment.R ${NET} ${WDIR} "rownormalized" &> Logs/${WDIR}/Run_GOEnrichment_${NET}_rownormalized_$(date +%F)--$(date +%H)":"$(date +%M).out
+Rscript --vanilla Scripts/${WDIR}/Run_GOEnrichment.R ${NET} ${WDIR} "sum_rownormalized" &> Logs/${WDIR}/Run_GOEnrichment_${NET}_sum_rownormalized_$(date +%F)--$(date +%H)":"$(date +%M).out
 
 # Plot GO enrichment of selected modules
 Rscript --vanilla Scripts/${WDIR}/Plot_GOEnrichment.R ${NET} ${WDIR} "sum_rownormalized" "1" &> Logs/${WDIR}/Plot_GOEnrichment_${NET}_sum_rownormalized_1_$(date +%F)--$(date +%H)":"$(date +%M).out
 
 # At this point the decision is made for sum of weights, so we further cluster the big module obtained with that analysis
+
+# Recursively cluster the large module
+Rscript --vanilla Scripts/${WDIR}/Compute_RecursiveClusters.R ${NET} ${WDIR} "sum_rownormalized" "Adjacency_undirected"
