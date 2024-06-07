@@ -14,6 +14,14 @@ source("Scripts/functions.R")
 # Load network ----------------------------------------------------------------
 net <- ReadRDS(paste0("Outputs/",WDIR,"/",NET,"_network_Hs.rds"))
 net <- as.matrix(net)
+if(grepl("ENSG",colnames(net)[1])){
+  colnames(net) <- VectorENSGToSymbol(colnames(net))
+  net <- net[,!is.na(colnames(net))]
+}
+if(grepl("ENSG",rownames(net)[1])){
+  rownames(net) <- VectorENSGToSymbol(rownames(net))
+  net <- net[!is.na(rownames(net)),]
+}
 net <- MatrixToSquare(net)
 
 # Gather genomic info data -----------------------------------------------------

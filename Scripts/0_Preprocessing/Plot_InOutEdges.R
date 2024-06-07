@@ -6,6 +6,7 @@ WDIR = args[2]
 
 .libPaths("Resources/Rlibs/R-4.0.3/")
 library(ggplot2)
+library(Matrix)
 source("Scripts/functions.R")
 
 # Load network ----------------------------------------------------------------
